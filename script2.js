@@ -270,3 +270,10 @@ form.addEventListener('submit', e => {
     if (active) active.classList.remove('focus');
   })
 });
+
+let nameSpecCharacters = /[^a-z0-9]+/gi.test(nameField.value);
+if (nameSpecCharacters) {
+  nameMessage.textContent = 'You cannot add special characters in this field';
+}
+
+^[a-zA-Z]+ ?[a-zA-Z]*? ?[a-zA-Z]*?$/

@@ -32,13 +32,26 @@ designs.addEventListener('change', (e) => {
   }
 });
 
-//activities event listener adds up total dollar amount according to selection.
-//also builds data into the datesTimes array for evaluating conflicting times/dates of activities later.
+//event listeners for focus/blur events to better visually identify the separate checkboxes
+//in the activities section when tabbing through.
 const activities = document.getElementById('activities');
-const totalCost = document.getElementById('activities-cost');
-let totalDollars = parseInt(totalCost.textContent.replace('Total: $0', '0'));
 const activitySelections = document.getElementById('activities-box');
 const activityCheckBoxes = activitySelections.children;
+for (let i = 0; i < activityCheckBoxes.length; i++ ) {
+  const checkbox = activityCheckBoxes[i].firstElementChild;
+  checkbox.addEventListener('focus', (e)=> {
+    e.target.parentElement.classList.add('focus');
+  });
+  checkbox.addEventListener('blur', (e) => {
+    e.target.parentElement.classList.remove('focus');
+  })
+}
+
+//activities event listener adds up total dollar amount according to selection.
+//also disables the other activities that have same date/time as selected.
+//disabling logic referenced from Unit 3 WarmUp project 'Checkboxes'
+const totalCost = document.getElementById('activities-cost');
+let totalDollars = parseInt(totalCost.textContent.replace('Total: $0', '0'));
 let datesTimes = [];
 activities.addEventListener('change', (e) => {
   const selectedCost = e.target.getAttribute('data-cost');
@@ -50,37 +63,53 @@ activities.addEventListener('change', (e) => {
     totalCost.textContent = 'Total: $' + totalDollars;
   }
   if (e.target.checked) {
-    const dateTime = e.target.getAttribute('data-day-and-time');
-    datesTimes.push(dateTime);
-    console.log(datesTimes);
-} else {
-    const dateTime = e.target.getAttribute('data-day-and-time');
-    let index = datesTimes.indexOf(dateTime);
-    datesTimes.splice(index, 1);
-    console.log(datesTimes);
+    let dateTime = e.target.getAttribute('data-day-and-time');
+    for (let i = 0; i < activityCheckBoxes.length; i++ ) {
+      let secondDateTime = activityCheckBoxes[i].firstElementChild.getAttribute('data-day-and-time');
+      if (dateTime === secondDateTime && e.target !== activityCheckBoxes[i].firstElementChild){
+        activityCheckBoxes[i].firstElementChild.disabled = true
+    } else {
+        activityCheckBoxes[i].firstElementChild.disabled = false;
+  }
+}
 }
 });
+
+    // datesTimes.push(dateTime);
+   // console.log(datesTimes)
+// } else {
+//     const dateTime = e.target.getAttribute('data-day-and-time');
+//     let index = datesTimes.indexOf(dateTime);
+//     datesTimes.splice(index, 1);
+//     console.log(datesTimes)
+// }
+
 
 //this function pushes unique values of datesTimes array into new array called uniqueDatesTimes.
 //if more than one selected, displays error messaging indicating this conflict, in addition to triggering
 //validationFail function for activities so user cannot submit.
-function validateDatesTimes() {
-  let uniqueDatesTimes = [];
-  uniqueDatesTimes.push(datesTimes[0])
-  for (let i = 1; i < datesTimes.length; i++) {
-    if (uniqueDatesTimes.includes(datesTimes[i])) {
-      activitiesMessage.innerHTML = 'Conflict of dates/times. Please change your selection.';
-      validationFail(activities);
-      break;
-  } else {
-      uniqueDatesTimes.push(datesTimes[i])
-    }
-  }
-  console.log(uniqueDatesTimes);
-};
+//let uniqueDatesTimes = [];
+// function validateDatesTimes() {
+//   let uniqueDatesTimes = [];
+//   console.log(uniqueDatesTimes);
+//   uniqueDatesTimes.push(datesTimes[0])
+//   for (let i = 1; i < datesTimes.length; i++) {
+//     if (uniqueDatesTimes.includes(datesTimes[i])) {
+//         activitiesMessage.innerHTML = 'Conflict of dates/times. Please change your selection.';
+//         validationFail(activities);
+//         console.log(uniqueDatesTimes);
+//         return false;
+//   } else {
+//       uniqueDatesTimes.push(datesTimes[i])
+//       activitiesMessage.innerHTML = 'Please choose an activity.'
+//       console.log(uniqueDatesTimes);
+//       return true;
+//     }
+//   }
+// };
 
 //this section hides and displays payment options according to selections from payMenu.
-//credit card option enabled on page load, but upon changes from user these elements are hidden
+//credit card option is enabled on page load, but upon changes from user these elements are hidden
 //when event listener is fired. same goes for the paypal and bitcoin options.
 const payMenu = document.getElementById('payment');
 payMenu.value = 'credit-card';
@@ -133,129 +162,129 @@ function validationFail(element) {
 //input requirements, using validationpass and validationfail functions created as helpers
 //to indicate styling. upon failure, unique error message should display according to namefield's parent element
 //textContent.
+
+//nameValidator function has 2 error messages: one for leaving the name blank and
+//the second for entering special characters.
 const nameValidator = () => {
-  let messageNumber = 0
-  const nameIsValid = /^[a-zA-Z0-9]+$/.test(nameField.value);
-  if (nameIsValid) {
-    validationPass(nameField);
-  } else {
+  let nameMessage = nameField.parentNode.lastElementChild
+  let nameSpecCharacters = /[^a-z0-9 ]+/gi.test(nameField.value);
+  const nameIsValid = /^[a-zA-Z0-9]+ ?$/.test(nameField.value);
+  if (nameSpecCharacters){
     validationFail(nameField);
-    if (messageNumber === 0) {
-      nameField.parentNode.insertAdjacentHTML('afterbegin', `<br>${nameField.parentNode.lastElementChild.textContent}<br>`);
-      messageNumber === 1;
-  }
+    nameMessage.textContent = 'You cannot enter special characters in this field.'
+    console.log('spec characters found!')
+    return false;
+} if (!nameIsValid) {
+    validationFail(nameField);
+    nameMessage.style.display = 'block';
+    console.log('name is empty');
+    return false;
+  } else if (nameIsValid) {
+      validationPass(nameField);
+      console.log('name is good')
+      return true;
+
 }
-messageNumber++;
 };
 
 
   const emailValidator = () => {
-    let messageNumber = 0;
+    let emailMessage = email.parentNode.lastElementChild;
     const emailIsValid = /^[^@]+@[^@.]+\.[a-z]+$/i.test(email.value);
     if (emailIsValid) {
       validationPass(email);
+      return true;
   } else {
       validationFail(email);
-      if (messageNumber === 0)
-        email.parentNode.insertAdjacentHTML('afterbegin', `<br>${email.parentNode.lastElementChild.textContent}<br>`);
-        messageNumber++;
-        console.log(messageNumber);
-  } if (!emailIsValid && messageNumber > 1){
-      validationFail(email);
-      email.parentNode.insertAdjacentHTML('afterbegin', '');
+      emailMessage.style.display = 'block';
+      return false;
   }
 };
 
-//validates that at least one activity is chosen. 
+//validates that at least one activity is chosen.
   let activitiesMessage = document.getElementsByTagName('legend')[2];
   const activityValidator = () => {
     const activitiesValid = (totalDollars > 0);
     if (activitiesValid) {
       validationPass(activities);
+      return true;
     } else {
       validationFail(activities);
-      activitiesMessage.innerHTML = 'You must choose at least one activity.';
+      activitiesMessage.style.display = 'block';
+      return false;
     }
     button.style.display = '';
   };
 
-
-
-
+//validates that the credit card number value is between 13 and 16 digits.
   const ccNumValidator = () => {
-    let messageNumber = 0;
+    let ccNumMessage = ccNum.parentNode.lastElementChild;
     if (payMenu.value === 'credit-card') {
       const ccNumIsValid = /^[0-9]{13,16}$/.test(ccNum.value);
       if (ccNumIsValid) {
         validationPass(ccNum);
-      } else if (!ccNumIsValid && ccNum.value.length > 5){
+        return true;
+      } else {
         validationFail(ccNum);
-        if (messageNumber === 0) {
-          ccNum.parentNode.insertAdjacentHTML('afterbegin', `<br>${ccNum.parentNode.lastElementChild.textContent}<br>`);
-          messageNumber++;
+        ccNumMessage.style.display = 'block';
+        return false;
       }
     }
-  }
-
   };
 
-      const zipValidator = () => {
-        let messageNumber = 0;
-        if (payMenu.value === 'credit-card') {
-          const zipIsValid = /^[0-9]{5}$/.test(zip.value);
-          if (zipIsValid) {
-            validationPass(zip);
-          } else {
-            validationFail(zip);
-            if (messageNumber === 0) {
-              zip.parentNode.insertAdjacentHTML('afterbegin', `<br>${zip.parentNode.lastElementChild.textContent}<br>`);
-            }
-        }
+    const zipValidator = () => {
+      let zipMessage = zip.parentNode.lastElementChild;
+      if (payMenu.value === 'credit-card') {
+        const zipIsValid = /^[0-9]{5}$/.test(zip.value);
+        if (zipIsValid) {
+          validationPass(zip);
+          return true;
+        } else {
+          validationFail(zip);
+          zipMessage.style.display = 'block';
+          return false;
       }
-        messageNumber++;
-      };
+    }
+  };
 
-      const cvvValidator = () => {
-        let messageNumber = 0;
-        if (payMenu.value === 'credit-card') {
-          const cvvIsValid = /^[0-9]{3}$/.test(cvv.value);
-          if (cvvIsValid) {
-            validationPass(cvv);
-          } else {
-            validationFail(cvv);
-            if (messageNumber === 0) {
-              cvv.parentNode.insertAdjacentHTML('afterbegin', `<br>${cvv.parentNode.lastElementChild.textContent}<br>`);
-          }
+    const cvvValidator = () => {
+      let cvvMessage = cvv.parentNode.lastElementChild;
+      if (payMenu.value === 'credit-card') {
+        const cvvIsValid = /^[0-9]{3}$/.test(cvv.value);
+        if (cvvIsValid) {
+          validationPass(cvv);
+          return true;
+        } else {
+          validationFail(cvv);
+          cvvMessage.style.display = 'block';
+          return false;
         }
       }
-        messageNumber++;
-      };
+    };
 
 //dynamic validations as user interacts with form, before submission.
   nameField.addEventListener('input', nameValidator);
   email.addEventListener('keyup', emailValidator);
-  activities.addEventListener('keyup', activityValidator);
   ccNum.addEventListener('input', ccNumValidator);
   zip.addEventListener('input', zipValidator);
   cvv.addEventListener('input', cvvValidator);
 
 //validation of all elements upon submission.
   form.addEventListener('submit', e => {
-    e.preventDefault();
     if (!nameValidator()) {
       e.preventDefault();
-    } if (!emailValidator()) {
+  } if (!emailValidator()) {
       e.preventDefault();
-    } if (!activityValidator()) {
+  } if (!activityValidator()) {
       e.preventDefault();
-    } if (validateDatesTimes()) {
+  } if (payMenu.value === 'credit-card' && !ccNumValidator()) {
       e.preventDefault();
-    } if (!ccNumValidator()) {
+  } if (payMenu.value === 'credit-card' && !zipValidator()) {
       e.preventDefault();
-    } if (!zipValidator()) {
+  } if (payMenu.value === 'credit-card' && !cvvValidator()){
       e.preventDefault();
-    } if (!cvvValidator()){
-      e.preventDefault();
+  } else {
+      form.submit();
     }
     button.style.display = '';
   });
