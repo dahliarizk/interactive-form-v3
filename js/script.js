@@ -45,7 +45,7 @@ for (let i = 0; i < activityCheckBoxes.length; i++ ) {
   checkbox.addEventListener('blur', (e) => {
     e.target.parentElement.classList.remove('focus');
   })
-}
+};
 
 //activities event listener adds up total dollar amount according to selection.
 //also disables the other activities that have same date/time as selected.
@@ -75,38 +75,6 @@ activities.addEventListener('change', (e) => {
 }
 });
 
-    // datesTimes.push(dateTime);
-   // console.log(datesTimes)
-// } else {
-//     const dateTime = e.target.getAttribute('data-day-and-time');
-//     let index = datesTimes.indexOf(dateTime);
-//     datesTimes.splice(index, 1);
-//     console.log(datesTimes)
-// }
-
-
-//this function pushes unique values of datesTimes array into new array called uniqueDatesTimes.
-//if more than one selected, displays error messaging indicating this conflict, in addition to triggering
-//validationFail function for activities so user cannot submit.
-//let uniqueDatesTimes = [];
-// function validateDatesTimes() {
-//   let uniqueDatesTimes = [];
-//   console.log(uniqueDatesTimes);
-//   uniqueDatesTimes.push(datesTimes[0])
-//   for (let i = 1; i < datesTimes.length; i++) {
-//     if (uniqueDatesTimes.includes(datesTimes[i])) {
-//         activitiesMessage.innerHTML = 'Conflict of dates/times. Please change your selection.';
-//         validationFail(activities);
-//         console.log(uniqueDatesTimes);
-//         return false;
-//   } else {
-//       uniqueDatesTimes.push(datesTimes[i])
-//       activitiesMessage.innerHTML = 'Please choose an activity.'
-//       console.log(uniqueDatesTimes);
-//       return true;
-//     }
-//   }
-// };
 
 //this section hides and displays payment options according to selections from payMenu.
 //credit card option is enabled on page load, but upon changes from user these elements are hidden
@@ -173,17 +141,14 @@ const nameValidator = () => {
     validationFail(nameField);
     nameMessage.style.display = 'initial';
     nameMessage.textContent = 'You cannot enter special characters in this field.'
-    console.log('spec characters found!')
     return false;
 } if (!nameIsValid || nameField.value.length === 0) {
     validationFail(nameField);
     nameMessage.innerHTML = 'You cannot leave this field empty.';
     nameMessage.style.display = 'block'
-    console.log('name is empty');
     return false;
   } else if (nameIsValid) {
       validationPass(nameField);
-      console.log('name is good')
       return true;
 
 }
@@ -271,7 +236,8 @@ const nameValidator = () => {
   zip.addEventListener('input', zipValidator);
   cvv.addEventListener('input', cvvValidator);
 
-//validation of all elements upon submission.
+//validation of all elements upon submission. if any element does not validate form
+//does not submit (page does not refresh).
   form.addEventListener('submit', e => {
     if (!nameValidator()) {
       e.preventDefault();
