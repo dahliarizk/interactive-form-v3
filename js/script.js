@@ -171,12 +171,14 @@ const nameValidator = () => {
   const nameIsValid = /^[a-zA-Z0-9]+ ?$/.test(nameField.value);
   if (nameSpecCharacters){
     validationFail(nameField);
+    nameMessage.style.display = 'initial';
     nameMessage.textContent = 'You cannot enter special characters in this field.'
     console.log('spec characters found!')
     return false;
-} if (!nameIsValid) {
+} if (!nameIsValid || nameField.value.length === 0) {
     validationFail(nameField);
-    nameMessage.style.display = 'block';
+    nameMessage.innerHTML = 'You cannot leave this field empty.';
+    nameMessage.style.display = 'block'
     console.log('name is empty');
     return false;
   } else if (nameIsValid) {
@@ -263,7 +265,7 @@ const nameValidator = () => {
     };
 
 //dynamic validations as user interacts with form, before submission.
-  nameField.addEventListener('input', nameValidator);
+  nameField.addEventListener('keyup', nameValidator);
   email.addEventListener('keyup', emailValidator);
   ccNum.addEventListener('input', ccNumValidator);
   zip.addEventListener('input', zipValidator);
