@@ -68,10 +68,15 @@ activities.addEventListener('change', (e) => {
       let secondDateTime = activityCheckBoxes[i].firstElementChild.getAttribute('data-day-and-time');
       if (dateTime === secondDateTime && e.target !== activityCheckBoxes[i].firstElementChild){
         activityCheckBoxes[i].firstElementChild.disabled = true
-    } else {
-        activityCheckBoxes[i].firstElementChild.disabled = false;
-  }
+      }
 }
+} else {
+      let dateTime = e.target.getAttribute('data-day-and-time');
+      for (let i = 0; i < activityCheckBoxes.length; i++ ) {
+        let secondDateTime = activityCheckBoxes[i].firstElementChild.getAttribute('data-day-and-time');
+        if (dateTime === secondDateTime && e.target !== activityCheckBoxes[i].firstElementChild){
+          activityCheckBoxes[i].firstElementChild.disabled = false;
+      }};
 }
 });
 
@@ -239,20 +244,14 @@ const nameValidator = () => {
 //validation of all elements upon submission. if any element does not validate form
 //does not submit (page does not refresh).
   form.addEventListener('submit', e => {
-    if (!nameValidator()) {
-      e.preventDefault();
-  } if (!emailValidator()) {
-      e.preventDefault();
-  } if (!activityValidator()) {
-      e.preventDefault();
-  } if (payMenu.value === 'credit-card' && !ccNumValidator()) {
-      e.preventDefault();
-  } if (payMenu.value === 'credit-card' && !zipValidator()) {
-      e.preventDefault();
-  } if (payMenu.value === 'credit-card' && !cvvValidator()){
-      e.preventDefault();
-  } else {
-      form.submit();
-    }
+    if (payMenu.value === 'paypal' || payMenu.value === 'bitcoin') {
+      if (!nameValidator() || !emailValidator() || !activityValidator()) {
+        e.preventDefault();
+  }
+  } if (payMenu.value === 'credit-card') {
+      if (!ccNumValidator() || !zipValidator() || !cvvValidator() || !nameValidator() || !emailValidator() || !activityValidator()){
+        e.preventDefault();
+  }
     button.style.display = '';
+  }
   });
