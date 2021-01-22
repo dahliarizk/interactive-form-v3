@@ -245,11 +245,25 @@ const nameValidator = () => {
 //does not submit (page does not refresh).
   form.addEventListener('submit', e => {
     if (payMenu.value === 'paypal' || payMenu.value === 'bitcoin') {
-      if (!nameValidator() || !emailValidator() || !activityValidator()) {
+      if (!nameValidator()) {
         e.preventDefault();
-  }
+    } if (!emailValidator()){
+        e.preventDefault();
+    } if (!activityValidator()) {
+        e.preventDefault();
+    }
   } if (payMenu.value === 'credit-card') {
-      if (!ccNumValidator() || !zipValidator() || !cvvValidator() || !nameValidator() || !emailValidator() || !activityValidator()){
+      if (!ccNumValidator()) {
+        e.preventDefault();
+     } if (!zipValidator()) {
+       e.preventDefault();
+     } if (!cvvValidator()) {
+       e.preventDefault();
+     } if (!nameValidator()) {
+       e.preventDefault();
+     } if (!emailValidator()) {
+       e.preventDefault();
+     } if (!activityValidator()) {
         e.preventDefault();
   }
     button.style.display = '';
