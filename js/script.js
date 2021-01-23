@@ -251,7 +251,7 @@ const nameValidator = () => {
         e.preventDefault();
     } if (!activityValidator()) {
         e.preventDefault();
-    }
+    } button.style.display = '';
   } if (payMenu.value === 'credit-card') {
       if (!ccNumValidator()) {
         e.preventDefault();
